@@ -24,6 +24,7 @@ const { currentModel } = useModelColor()
 @media (max-width: 680px) {
   .model-background {
     background-size: contain;
+    background-repeat: repeat;
   }
 }
 </style>
