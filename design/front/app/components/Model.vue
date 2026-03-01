@@ -20,4 +20,10 @@ const { currentModel } = useModelColor()
   background-repeat: no-repeat;
   filter: contrast(1.2);
 }
+
+@media (max-width: 680px) {
+  .model-background {
+    background-size: contain;
+  }
+}
 </style>

@@ -22,7 +22,8 @@
               FireWire controller chip, which can be connected via the FPC cable, utilizing PCIe.
             </p>
           </div>
-          <div>
+          <div class="specs" :class="{ open: specsOpen }" @click="specsOpen = !specsOpen">
+            <span class="specs-toggle">Specs</span>
             <p v-if="currentModel === 'equip-1'">
               60mm × 70mm × 25mm<br />
               Saves to MicroSD<br />
@@ -42,11 +43,11 @@
           </div>
         </div>
         <div class="buttons">
-          <button>Inspect</button>
           <div class="s">
             <a href="https://github.com/computerequipmentgroup/equip-1">Github</a>
             <a href="https://discord.gg/QEGVWvQaCJ">Discord</a>
           </div>
+          <button>Inspect</button>
         </div>
       </footer>
     </div>
@@ -55,6 +56,7 @@
 
 <script setup lang="ts">
 const { currentModel, setModel } = useModelColor()
+const specsOpen = ref(false)
 </script>
 
 <style>
@@ -212,7 +214,7 @@ footer button {
   border-radius: 15px;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: linear-gradient(0deg, #5500ff 0%, rgba(0, 0, 0, 1) 100%);
+  background: linear-gradient(0deg, #50f, #000);
   filter: invert(1) saturate(2.5);
 }
 
@@ -248,5 +250,102 @@ footer .t div:hover,
 footer .t div.active {
   color: white;
   background: rgba(0, 0, 0, 1);
+}
+
+.specs-toggle {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  body {
+    font-size: 16px;
+  }
+
+  header {
+    padding: 1.5rem;
+    font-size: 1.4rem;
+  }
+
+  header img {
+    max-width: 180px;
+  }
+
+  footer .d {
+    flex-flow: column nowrap;
+  }
+
+  footer .d div {
+    padding: 1.5rem;
+  }
+
+  footer .d div:first-of-type {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 1);
+  }
+
+  footer .t {
+    left: 1rem;
+    top: -2.5rem;
+    margin: -3rem 0 0 0;
+    max-width: 100px;
+    max-height: 100px;
+    font-size: 0.85rem;
+  }
+
+  footer .buttons {
+    flex-direction: column;
+  }
+
+  footer .buttons .s {
+    order: -1;
+    border-bottom: 1px solid rgba(0, 0, 0, 1);
+  }
+
+  footer .buttons a {
+    padding: 1rem 2rem;
+  }
+
+  footer button {
+    position: static;
+    height: auto;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 0.85rem;
+    border-radius: 0;
+    border: none;
+  }
+
+  footer .d .specs {
+    cursor: pointer;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  footer .d .specs .specs-toggle {
+    display: block;
+    padding: 1rem 1.5rem;
+  }
+
+  footer .d .specs .specs-toggle::after {
+    content: ' +';
+  }
+
+  footer .d .specs.open .specs-toggle::after {
+    content: ' −';
+  }
+
+  footer .d .specs p {
+    max-height: 0;
+    padding: 0 1.5rem;
+    transition:
+      max-height 0.3s ease,
+      padding 0.3s ease;
+  }
+
+  footer .d .specs.open p {
+    max-height: 200px;
+    padding: 0 1.5rem 1.5rem;
+  }
 }
 </style>
