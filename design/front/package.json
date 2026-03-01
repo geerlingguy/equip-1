@@ -10,12 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@tresjs/cientos": "^5.4.0",
-    "@tresjs/core": "^5.5.0",
-    "@tresjs/post-processing": "^3.4.0",
     "nuxt": "^4.3.1",
-    "postprocessing": "^6.38.3",
-    "three": "^0.183.1",
     "vue": "^3.5.28",
     "vue-router": "^4.6.4"
   }

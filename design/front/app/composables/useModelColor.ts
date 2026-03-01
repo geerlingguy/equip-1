@@ -1,14 +1,12 @@
 import { ref } from 'vue'
 
-const modelColor = ref('#5500ff')
+type ModelType = 'equip-1' | 'firehat'
+
+const currentModel = ref<ModelType>('equip-1')
 
 export function useModelColor() {
-  const setColor = (color: string) => {
-    modelColor.value = color
-  }
-
   return {
-    modelColor,
-    setColor
+    currentModel,
+    setModel: (model: ModelType) => currentModel.value = model
   }
 }
