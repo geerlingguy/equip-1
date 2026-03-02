@@ -92,22 +92,17 @@ class Display:
         self.device.display(img)
 
 
-class Screen:
-    """Base class for all screens"""
-    
+class Screen:    
     def __init__(self, app):
         self.app = app
     
     def on_select(self):
-        """Called when middle button is pressed"""
         pass
     
     def can_navigate(self):
-        """Return False to lock navigation (e.g., during recording)"""
         return True
     
     def render(self, draw, width, height):
-        """Override to draw screen content"""
         pass
 
 
@@ -266,17 +261,6 @@ class TestScreen(Screen):
         draw.rectangle((0, 0, width, height), fill=255)
 
 
-# --- LED (WS2812B via C helper) ---
-# not working with the 2f and firehat prototype :/ 
-# Pi5 could work because the connected pin supports PWM
-# LED needs rewrite
-
-""" class LED:
-    def __init__(self):
-        self._color = (0, 0, 0)
-        self.off() """
-
-
 
 class Buzzer:
     # Pin 32 on Rock 2F -> gpio-147 on gpiochip4 (line 19)
@@ -343,7 +327,6 @@ class App:
         self.display = Display()
         self.buttons = Buttons()
         self.buzzer = Buzzer()
-        self.led = LED()
         
         self.screens = [
             #TestScreen(self),
@@ -373,14 +356,6 @@ class App:
         if self.current_screen.can_navigate():
             self.current_screen_idx = (self.current_screen_idx + 1) % len(self.screens)
     
-    def update_led(self):
-        if self.recorder.is_recording:
-            self.led.red()
-        elif self.recorder.camera_connected:
-            self.led.green()
-        else:
-            self.led.set_color(255, 100, 0)  # orange
-    
     def run(self):
         try:
             while True:
@@ -396,7 +371,6 @@ class App:
                     self.buzzer.beep()
                     self.current_screen.on_select()
                 
-                self.update_led()
                 self.display.render(self.current_screen.render)
                 time.sleep(0.05)
         
@@ -407,7 +381,6 @@ class App:
                 self.recorder.toggle()
             self.buttons.close()
             self.buzzer.close()
-            self.led.close()
 
 
 def main():
