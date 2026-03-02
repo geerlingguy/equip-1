@@ -3,6 +3,7 @@ notes.txt
 os/os-env/
 pcb
 os/recorder.py
+case
 
 
 plasticity/*.plasticity
