@@ -8,6 +8,26 @@ from luma.core.interface.serial import i2c
 from luma.oled.device import sh1106
 from PIL import Image, ImageDraw, ImageFont
 
+# Set to "rock2f" or "rpi"
+BOARD = "rock2f"
+
+if BOARD == "rock2f":
+    I2C_PORT = 0
+    GPIOCHIP = "/dev/gpiochip4"
+    BUZZER = 19
+    BTN_UP = 15
+    BTN_SELECT = 16
+    BTN_DOWN = 22
+elif BOARD == "rpi":
+    I2C_PORT = 1
+    GPIOCHIP = "/dev/gpiochip4"
+    BUZZER = 12
+    BTN_UP = 22
+    BTN_SELECT = 27
+    BTN_DOWN = 17
+else:
+    raise ValueError(f"Unknown BOARD: {BOARD}")
+
 
 class RecorderState:
     def __init__(self, output_dir=None):
@@ -72,7 +92,7 @@ class RecorderState:
 
 class Display:
     def __init__(self):
-        serial = i2c(port=0, address=0x3C)
+        serial = i2c(port=I2C_PORT, address=0x3C)
         self.device = sh1106(serial)
         self.font_medium = ImageFont.truetype(
             "fonts/Px437_DOS-V_re_JPN12.ttf", 12
@@ -263,9 +283,7 @@ class TestScreen(Screen):
 
 
 class Buzzer:
-    # Pin 32 on Rock 2F -> gpio-147 on gpiochip4 (line 19)
-    # it is a little quiet on the 2f, there could be something wrong here
-    def __init__(self, chip="/dev/gpiochip4", line=19):
+    def __init__(self, chip=GPIOCHIP, line=BUZZER):
         self.gpio = GPIO(chip, line, "out")
     
     def beep(self, duration=0.08, freq=2048):
@@ -304,16 +322,10 @@ class Button:
 
 
 class Buttons:
-    PIN_MAP = {
-        11: ("/dev/gpiochip4", 15),  # GPIO4_B7 - Up
-        13: ("/dev/gpiochip4", 16),  # GPIO4_C0 - Select
-        15: ("/dev/gpiochip4", 22),  # GPIO4_C6 - Down
-    }
-
     def __init__(self):
-        self.up = Button(*self.PIN_MAP[11])
-        self.select = Button(*self.PIN_MAP[13])
-        self.down = Button(*self.PIN_MAP[15])
+        self.up = Button(GPIOCHIP, BTN_UP)
+        self.select = Button(GPIOCHIP, BTN_SELECT)
+        self.down = Button(GPIOCHIP, BTN_DOWN)
  
     def close(self):
         self.up.close()
