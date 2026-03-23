@@ -105,11 +105,15 @@ class Display:
         img = Image.new("1", self.device.size)
         self.device.display(img)
 
-    def render(self, draw_func):
-        img = Image.new("1", self.device.size)
-        draw = ImageDraw.Draw(img)
-        draw_func(draw, self.device.width, self.device.height)
-        self.device.display(img)
+    def render(self, draw_func, pre_draw=None):
+            img = Image.new("1", self.device.size)
+            draw = ImageDraw.Draw(img)
+
+            if pre_draw:
+                pre_draw(draw, self.device.width, self.device.height)
+
+            draw_func(draw, self.device.width, self.device.height)
+            self.device.display(img)
 
 
 class Screen:    
@@ -368,6 +372,21 @@ class App:
         if self.current_screen.can_navigate():
             self.current_screen_idx = (self.current_screen_idx + 1) % len(self.screens)
     
+    def get_battery_level(self):
+            try:
+                result = subprocess.run(
+                    ["nc", "-U", "-q", "0", "/tmp/pisugar-server.sock"],
+                    input=b"get battery\n",
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.DEVNULL
+                )
+                if result.returncode == 0:
+                    output = result.stdout.decode().strip()
+                    return int(float(output.split()[1]))  # parse battery level
+            except Exception as e:
+                pass
+            return None
+
     def run(self):
         try:
             while True:
@@ -382,10 +401,61 @@ class App:
                 if self.buttons.select.pressed():
                     self.buzzer.beep()
                     self.current_screen.on_select()
-                
-                self.display.render(self.current_screen.render)
+
+                # Draw battery percentage
+                def pre_draw(draw, width, height):
+                    battery_pct = self.get_battery_level()
+                    if battery_pct is not None:
+                        font = self.display.font_medium
+                        battery_text = f"{battery_pct}%"
+
+                        # Measure text size
+                        txt_bbox = draw.textbbox((0, 0), battery_text, font=font)
+                        txt_width = txt_bbox[2] - txt_bbox[0]
+                        txt_height = txt_bbox[3] - txt_bbox[1]
+
+                        # Battery icon size and position (left of the text)
+                        icon_width = 3
+                        icon_height = txt_height
+                        gap = 3  # Space between battery icon and percentage
+
+                        total_element_width = txt_width + icon_width + gap
+
+                        # Calculate center x so both icon and text are centered together
+                        txt_x = (width - total_element_width) // 2
+                        icon_left = txt_x  # Icon comes first, left-aligned
+
+                        # Draw battery bar (vertical)
+                        battery_top = 2
+                        battery_bottom = icon_height
+
+                        draw.rectangle(
+                            (icon_left, battery_top, icon_left + icon_width, battery_bottom),
+                            fill=255
+                        )
+
+                        # Add a positive terminal to the top of the battery icon
+                        notch_width = 2
+                        notch_x_start = icon_left - ((notch_width - icon_width) // 2)
+                        notch_top_y = 1
+                        for x in range(notch_x_start, notch_x_start + notch_width):
+                            draw.point((x, notch_top_y), fill=255)
+                        term_x = icon_left + icon_width
+                        term_y = -1
+                        draw.point((term_x, term_y), fill=255)
+
+                        # Draw percentage text right after the gap
+                        txt_final_x = icon_left + icon_width + gap
+                        draw.text(
+                            (txt_final_x, 0),
+                            battery_text,
+                            font=font,
+                            fill=255
+                        )
+
+                self.display.render(self.current_screen.render, pre_draw=pre_draw)
                 time.sleep(0.05)
-        
+
         except KeyboardInterrupt:
             pass
         finally:
