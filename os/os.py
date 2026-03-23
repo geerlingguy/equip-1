@@ -9,7 +9,7 @@ from luma.oled.device import sh1106
 from PIL import Image, ImageDraw, ImageFont
 
 # Set to "rock2f" or "rpi"
-BOARD = "rock2f"
+BOARD = os.environ.get("EQUIP_1_BOARD_TYPE", "rock2f")
 
 if BOARD == "rock2f":
     I2C_PORT = 0
