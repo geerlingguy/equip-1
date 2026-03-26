@@ -1,60 +1,42 @@
-## equip-1 0.1 alpha
+# Equip-1
 
-Hardware:
+Compact DV recorder. Connects to any FireWire camcorder and saves footage directly to microSD. No laptop required.
 
-- Radxa 2f 2Gb RAM 8Gb eMMC (Raspberry Pi needs testing)
-- [Rasperry Pi 5 PCIe Hat](https://de.aliexpress.com/item/1005007875203834.html) (Compatible with the 2f)
-- [VIA VT6315N Firewire card](https://de.aliexpress.com/item/1005005044278296.html)
-- A good firewire cable (Sometimes there are these transparent cables delivered with the firewire card, they did not work for me!)
+Supports MiniDV, DVCAM, DVCPRO, Digital8, and HDV. Controls the tape deck on supported cameras, so you can digitize an entire tape automatically. Pressing record on the camera triggers capture on the Equip-1.
 
-Software:
+Built around the [Radxa ROCK 2F](https://radxa.com/products/rock2/2f/) and our custom **Firehat** — a FireWire HAT with a VIA VT6315N controller connected via PCIe over FPC.
 
-- [Rock 2f Custom Firewire Armbian Image](https://drive.google.com/drive/folders/1kLxVSK0Dhzc2q1MnAXW4JjSZa23EkOea?usp=sharing)
-- [DVGrab](https://github.com/ddennedy/dvgrab)
+The Firehat is also available standalone. It works as a HAT for the ROCK 2F, Pi 5 and other SBCs.
 
-### Install custom OS
+## Hardware
 
-[Use this guide](https://docs.radxa.com/en/rock2/rock2f/getting-started/install-os/maskrom) to install the provided image on the 2f.
-The provided image has the custom firewire kernels already installed, created by the [armbian-build tool](https://github.com/armbian/build). The folder also contains the SPI loader file, which is needed for flashing the OS on the 2f. Disconnect the 2f after you finished the installation.
+**Equip-1**
 
-### Connect the hardware and first boot
+- Radxa ROCK 2F (Rockchip RK3528A, quad-core ARM Cortex-A53, 2 GB RAM, 8 GB eMMC)
+- Firehat (see below)
+- MicroSD storage
+- USB-C power input, 5V
+- HDMI output
+- WiFi 6, Bluetooth 5.4
+- 2x USB 2.0 Type-A
+- 60 mm x 70 mm x 25 mm, ~100 g
 
-Attach the hat on the 2f, connect the ffc cable, and slide the firewire card in the PCIe connector.
+**Firehat**
 
-Connect the 2f to a screen and keyboard and then boot it. Go through the setup.
+- VIA VT6315N FireWire controller
+- 6-pin FireWire port (DVin)
+- PCIe 2.0 x1 via FPC connector
+- 40-pin 2.54 mm GPIO header (Raspberry Pi-compatible)
+- OLED display
+- 3x SMD buttons, RGB LED, buzzer
+- 56 mm x 70 mm x 12 mm, ~25 g
 
-Use `lspci` to check if the firewire card got recognized.
+## Open Source
 
-### DVGrab and recording
+Hardware is licensed under [CERN OHL-S](https://ohwr.org/cern_ohl_s_v2.txt). Software is licensed under GPL. Derivatives must be released under the same licenses.
 
-If the firewire card shows up, it is now time to install DVGrab.
+## Community
 
-```
-sudo apt install dvgrab
-```
+Discord: [discord.gg/jfMNN83wep](https://discord.gg/wpXmcb5mvK)
 
-Connect your camera to the setup and turn it on (Camera mode).
-
-Enter this command to start capturing:
-
-```
-dvgrab -buffers 20 name-
-```
-
-You are now capturing DV footage via firewire on a self build device!
-
-To end the recording press `ctrl + c` and the .dv file will be saved in the destination, where you started the command from.
-
-<img src="assets/device.png" alt="equip-1 hardware setup" width="600"/>
-
-### Making it portable
-
-Adding a NEEWER 10,500 mAh NP-F970 battery allows this setup to be powered via the USB-C port.
-To control the device, a small button and an OLED screen are added using the GPIO pins of the 2F.
-
-<p float="left">
-  <img src="assets/portable.gif" width="300" />
-  <img src="assets/interface.gif" width="300" />
-</p>
-
-If you like this project and want to know more about the development and future steps, or even build your own version, feel free to [join this discord](https://discord.gg/KU3UhgPA7P). We are a tiny community building objects with computers!
+If you like this project and want to know more about the development and future steps, or even build your own version, feel free to join this discord. We are a small community building objects with computers!
